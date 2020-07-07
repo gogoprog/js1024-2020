@@ -52,9 +52,25 @@ class Main {
 
             return n;
         }
+        function addColorStop(gradient, f, col) {
+            gradient.addColorStop(f, col);
+        }
         var gradient = Shim.context.createLinearGradient(0, 0, 0, screenSize);
-        gradient.addColorStop(0, "#116");
-        gradient.addColorStop(1, "#A9D");
+        addColorStop(gradient, 0, "#116");
+        addColorStop(gradient, 0.75, "#A9D");
+        addColorStop(gradient, 1, "#003");
+        function drawBuildings(f, vmirror:Bool, hmax) {
+            var a = (time/f) % 32;
+
+            for(i in 0...20) {
+                rseed = Std.int((time / f)/32) + i;
+                var h = 24 + random() * hmax;
+                var w = 16+ random() * 16;
+                drawRect(i * 32 - a, horizon - (vmirror ? 0 : h/2), w, h);
+                var h = h + random() * 32;
+                drawRect(i * 32 - a - w/2 + random() * w, horizon - (vmirror ? 0 : h/2), 4 + random() * 4, h);
+            }
+        }
         function loop(t:Float) {
             col(gradient);
             drawRect(256, 256, screenSize, screenSize);
@@ -62,27 +78,12 @@ class Main {
             col("#6bf");
             drawCircle(screenSize/2, horizon, 128);
             col("#57c");
-            var a = (time/2) % 32;
-
-            for(i in 0...20) {
-                var h = 24 + random() * 40;
-                rseed = Std.int(time/2/32) + i;
-                drawRect(i * 32 - a, horizon - h/2, 16 + random() * 16, h);
-            }
-
-            {
-                col("#128");
-                drawRect(screenSize/2, horizon, screenSize, 16);
-                var a = time%32;
-
-                for(i in 0...20) {
-                    rseed = Std.int(time/32) + i;
-                    drawRect(i * 32 - a, horizon, 16 + random() * 16, 48 + random() * 64);
-                }
-            }
-
+            drawBuildings(2, false, 40);
+            col("#128");
+            drawRect(screenSize/2, horizon, screenSize, 16);
+            drawBuildings(1, true, 75);
             col("#aaa");
-            alpha(0.4);
+            alpha(0.5);
             drawRect(256, horizon + 64, screenSize, 128);
             time++;
             untyped requestAnimationFrame(loop);
