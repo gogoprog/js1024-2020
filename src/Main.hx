@@ -1,30 +1,6 @@
 import js.Browser.document;
 import js.Browser.window;
 
-typedef Bullet = {
-    var x:Float;
-    var y:Float;
-    var d:Int;
-}
-
-typedef Enemy = {
-    var x:Float;
-    var t:Float;
-    var life:Int;
-}
-
-typedef Particle = {
-    var x:Float;
-    var y:Float;
-    var t:Float;
-}
-
-typedef Bonus = {
-    var x:Float;
-    var y:Float;
-    var b:Int;
-}
-
 class Main {
     static function main() {
         var w = window;
@@ -34,25 +10,14 @@ class Main {
         var ctx:js.html.CanvasRenderingContext2D = c.getContext("2d");
         var lastFireTime:Int;
         var rseed;
-        var mx;
-        var life:Int;
-        var power:Int;
-        var mustFire:Bool;
-        var bullets:Array<Bullet>;
-        var enemies:Array<Enemy>;
-        var particles:Array<Particle>;
-        var bonuses:Array<Bonus>;
+        var mx= 0;
         var time:Int = 0;
-        var extremes = [-1, 1];
         var m = Math;
         var abs = m.abs;
         var sin = m.sin;
         var cos = m.cos;
-        var state = 0;
-        var score;
-        var bestScore = 0;
-        ctx.font = "20px monospace";
-        function col(n) {
+        var horizon:Float = 512 * 0.75;
+        function col(n:Dynamic) {
             ctx.fillStyle = n;
         }
         function alpha(n) {
@@ -61,7 +26,7 @@ class Main {
         function scale(s) {
             ctx.scale(s, s);
         }
-        function drawRect(x:Float, y:Float, w, h) {
+        function drawRect(x:Float, y:Float, w:Float, h:Float) {
             ctx.fillRect(x-w/2, y-h/2, w, h);
         }
         function mto(x, y) {
@@ -76,7 +41,7 @@ class Main {
         function fill() {
             ctx.fill();
         }
-        function circle(x, y, r) {
+        function drawCircle(x, y, r) {
             beginPath();
             ctx.arc(x, y, r, 0, 6.28);
             fill();
@@ -86,7 +51,6 @@ class Main {
             return x - Std.int(x);
         }
         w.onmousedown = w.onmouseup = function(e) {
-            mustFire = untyped e.buttons;
         }
         w.onmousemove = function(e) {
             mx = e.clientX;
@@ -102,29 +66,38 @@ class Main {
 
             return n;
         }
-        function fire(x, y, d) {
-            bullets[getn(bullets)] = {x:x, y:y, d:d};
-        }
-        function ftext(a, b, c) {
-            ctx.fillText(a, b, c);
-        }
-        function explode(x, y) {
-            for(j in 0...36) {
-                particles[getn(particles)] = {x:x, y:y, t:0};
-            }
-
-            untyped z(1, .05, 652, 1, .01, .6, 4, 71, .9);
-        }
+        var gradient = ctx.createLinearGradient(0, 0, 0, screenSize);
+        gradient.addColorStop(0, "#116");
+        gradient.addColorStop(1, "#A9D");
         function loop(t:Float) {
-            col("#33B");
+            // col("#33B");
+            col(gradient);
             drawRect(256, 256, screenSize, screenSize);
+            alpha(1);
             rseed = 1;
             col("#fff");
+            // for(i in 0...99) {
+            //     drawRect(random() * screenSize, (random() * screenSize + t * (random() * 0.2)) % screenSize, 2, 2);
+            // }
+            col("#6bf");
+            drawCircle(screenSize/2, horizon, 128);
+            col("#57c");
 
-            for(i in 0...99) {
-                drawRect(random() * screenSize, (random() * screenSize + t * (random() * 0.2)) % screenSize, 2, 2);
+            for(i in 0...20) {
+                var h = 24 + random() * 40;
+                drawRect(i * 32 - mx * 0.05, horizon - h/2, 16 + random() * 16, h);
             }
 
+            col("#128");
+            drawRect(screenSize/2, horizon, screenSize, 16);
+
+            for(i in 0...20) {
+                drawRect(i * 32 - mx * 0.1, horizon, 16 + random() * 16, 48 + random() * 64);
+            }
+
+            col("#aaa");
+            alpha(0.4);
+            drawRect(256, horizon + 64, screenSize, 128);
             time++;
             w.requestAnimationFrame(loop);
         }
