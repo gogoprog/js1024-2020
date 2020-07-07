@@ -2,11 +2,12 @@ default: build
 
 compile:
 	haxe build.hxml
-	# sed '1d' -i temp/main.js
-	# sed '1d' -i temp/main.js
-	# sed '1d' -i temp/main.js
-	# sed '$$d' -i temp/main.js
-	# sed '$$d' -i temp/main.js
+	sed '1d' -i temp/main.js
+	sed '1d' -i temp/main.js
+	sed '1d' -i temp/main.js
+	sed '1d' -i temp/main.js
+	sed '$$d' -i temp/main.js
+	sed '$$d' -i temp/main.js
 
 build: compile
 	mkdir -p build
