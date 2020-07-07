@@ -1,0 +1,5 @@
+-cp src
+-js temp/main.js
+-main Main
+-dce full
+-D js_classic
