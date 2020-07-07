@@ -8,13 +8,10 @@ extern class Shim {
 
 class Main {
     static function main() {
-        var w = window;
-        trace(Shim.canvas);
-        untyped __js__("console.log(a);");
         var screenSize = 512;
         Shim.canvas.width = Shim.canvas.height = screenSize;
         var rseed;
-        var mx= 0;
+        var mx = 0;
         var time:Int = 0;
         var m = Math;
         var abs = m.abs;
@@ -39,9 +36,9 @@ class Main {
             var x = (sin(rseed++) + 1) * 9999;
             return x - Std.int(x);
         }
-        w.onmousedown = w.onmouseup = function(e) {
+        untyped onmousedown = untyped onmouseup = function(e) {
         }
-        w.onmousemove = function(e) {
+        untyped onmousemove = function(e) {
             mx = e.clientX;
         }
         function getn(arr:Dynamic) {
