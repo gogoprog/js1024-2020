@@ -6,18 +6,25 @@ extern class Shim {
     @:native("c") static var context:js.html.CanvasRenderingContext2D;
 }
 
+typedef Entity = {
+    var x:Float;
+    var y:Float;
+    var d:Int;
+}
+
 class Main {
+    static inline var screenSize = 512;
     static function main() {
-        var screenSize = 512;
         Shim.canvas.width = Shim.canvas.height = screenSize;
         var rseed;
-        var mx = 0;
+        var my = 0;
         var time:Int = 0;
         var m = Math;
         var abs = m.abs;
         var sin = m.sin;
         var cos = m.cos;
-        var horizon:Float = 512 * 0.75;
+        var horizon:Float = screenSize * 0.75;
+        var entities = new Array<Entity>();
         function col(n:Dynamic) {
             Shim.context.fillStyle = n;
         }
@@ -33,27 +40,25 @@ class Main {
             Shim.context.fill();
         }
         function random():Float {
-            var x = (sin(rseed++) + 1) * 9999;
+            var x = (sin(rseed++) + 1) * 99;
             return x - Std.int(x);
         }
         untyped onmousedown = untyped onmouseup = function(e) {
         }
         untyped onmousemove = function(e) {
-            mx = e.clientX;
+            my = m.min(screenSize * 0.7, e.clientY);
         }
-        function getn(arr:Dynamic) {
-            var n = arr.length;
-
-            for(i in 0...n) {
-                if(arr[i].t > 666 || abs(arr[i].y) > screenSize*2) {
-                    return i;
-                }
-            }
-
-            return n;
+        function spawn(x, y, d) {
+            entities[entities.length] = {x:x, y:y, d:d};
         }
         function addColorStop(gradient, f, col) {
             gradient.addColorStop(f, col);
+        }
+        inline function drawShip() {
+            col("#111");
+            drawRect(64, my, 32, 16);
+            drawRect(40, my + 9, 16, 9);
+            drawRect(40, my - 9, 16, 9);
         }
         var gradient = Shim.context.createLinearGradient(0, 0, 0, screenSize);
         addColorStop(gradient, 0, "#116");
@@ -72,21 +77,42 @@ class Main {
             }
         }
         function loop(t:Float) {
-            col(gradient);
-            drawRect(256, 256, screenSize, screenSize);
-            alpha(1);
-            col("#6bf");
-            drawCircle(screenSize/2, horizon, 128);
-            col("#57c");
-            drawBuildings(2, false, 40);
-            col("#128");
-            drawRect(screenSize/2, horizon, screenSize, 16);
-            drawBuildings(1, true, 75);
-            col("#aaa");
-            alpha(0.5);
-            drawRect(256, horizon + 64, screenSize, 128);
-            time++;
-            untyped requestAnimationFrame(loop);
+            {
+                // World
+                col(gradient);
+                drawRect(screenSize/2, screenSize/2, screenSize, screenSize);
+                alpha(1);
+                col("#6bf");
+                drawCircle(screenSize/2, horizon, 128);
+                col("#57c");
+                drawBuildings(2, false, 40);
+                col("#128");
+                drawRect(screenSize/2, horizon, screenSize, 16);
+                drawBuildings(1, true, 75);
+            }
+            {
+                // Ship and coins
+                drawShip();
+                col("#fff");
+
+                if(time % 32 == 0) {
+                    spawn(screenSize*1.2, random() * 256, 0);
+                }
+
+                for(e in entities) {
+                    drawCircle(e.x, e.y, 4);
+                    e.x -= 2;
+                }
+            }
+            {
+                // Water reflection
+                alpha(0.3);
+                drawRect(screenSize/2, horizon + screenSize/8, screenSize, screenSize/4);
+            }
+            {
+                time++;
+                untyped requestAnimationFrame(loop);
+            }
         }
         loop(0);
     }
