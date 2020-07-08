@@ -18,9 +18,10 @@ build: compile
 retail: compile
 	mkdir -p retail
 	terser --compress unsafe_arrows=true,unsafe=true,toplevel=true,passes=8 --mangle --mangle-props --toplevel --ecma 6 -O ascii_only=true -- temp/main.js > temp/main.min.js
+	regpack temp/main.min.js > temp/main.min.regpack.js
 	cat src/before.html > retail/index.html
-	cat temp/main.min.js >> retail/index.html
+	cat temp/main.min.regpack.js >> retail/index.html
 	cat src/after.html >> retail/index.html
-	stat temp/main.min.js | grep Size
+	stat temp/main.min.regpack.js | grep Size
 
 .PHONY: build retail
