@@ -9,11 +9,12 @@ extern class Shim {
 typedef Entity = {
     var x:Float;
     var y:Float;
-    var d:Int;
+    var r:Int;
 }
 
 class Main {
     static inline var screenSize = 512;
+    static inline var mx = 64;
     static function main() {
         Shim.canvas.width = Shim.canvas.height = screenSize;
         var rseed;
@@ -25,6 +26,9 @@ class Main {
         var cos = m.cos;
         var horizon:Float = screenSize * 0.75;
         var entities = new Array<Entity>();
+        var life = 100;
+        var speed = 1;
+        var distance = 0;
         function col(n:Dynamic) {
             Shim.context.fillStyle = n;
         }
@@ -48,33 +52,39 @@ class Main {
         untyped onmousemove = function(e) {
             my = m.min(screenSize * 0.7, e.clientY);
         }
-        function spawn(x, y, d) {
-            entities[entities.length] = {x:x, y:y, d:d};
+        function spawn(x, y, r) {
+            entities[entities.length] = {x:x, y:y, r:r};
         }
         function addColorStop(gradient, f, col) {
             gradient.addColorStop(f, col);
         }
         inline function drawShip() {
             col("#111");
-            drawRect(64, my, 32, 16);
-            drawRect(40, my + 9, 16, 9);
-            drawRect(40, my - 9, 16, 9);
+            drawRect(mx, my, 32, 16);
+            drawRect(mx - 24, my + 9, 16, 9);
+            drawRect(mx - 24, my - 9, 16, 9);
         }
         var gradient = Shim.context.createLinearGradient(0, 0, 0, screenSize);
         addColorStop(gradient, 0, "#116");
         addColorStop(gradient, 0.75, "#A9D");
         addColorStop(gradient, 1, "#003");
         function drawBuildings(f, vmirror:Bool, hmax) {
-            var a = (time/f) % 32;
+            var a = (distance/f) % 32;
 
             for(i in 0...20) {
-                rseed = Std.int((time / f)/32) + i;
+                rseed = Std.int((distance/ f)/32) + i;
                 var h = 24 + random() * hmax;
                 var w = 16+ random() * 16;
                 drawRect(i * 32 - a, horizon - (vmirror ? 0 : h/2), w, h);
                 var h = h + random() * 32;
                 drawRect(i * 32 - a - w/2 + random() * w, horizon - (vmirror ? 0 : h/2), 4 + random() * 4, h);
             }
+        }
+        inline function isEnemy(e) {
+            return e.r != 4;
+        }
+        inline function isCoin(e) {
+            return e.r == 4;
         }
         function loop(t:Float) {
             {
@@ -85,33 +95,55 @@ class Main {
                 col("#6bf");
                 drawCircle(screenSize/2, horizon, 128);
                 col("#57c");
-                drawBuildings(2, false, 40);
+                drawBuildings(4, false, 40);
                 col("#128");
                 drawRect(screenSize/2, horizon, screenSize, 16);
-                drawBuildings(1, true, 75);
+                drawBuildings(2, true, 75);
             }
             {
                 // Ship and coins
                 drawShip();
-                col("#fff");
 
-                if(time % 32 == 0) {
-                    spawn(screenSize*1.2, random() * 256, 0);
+                if(distance % 32 == 0) {
+                    spawn(screenSize*1.2, random() * 256, random() < 0.5 ? 4 : 16);
                 }
 
                 for(e in entities) {
-                    drawCircle(e.x, e.y, 4);
-                    e.x -= 2;
+                    col("#c" + (isCoin(e)? "f0" : "11"));
+                    drawCircle(e.x, e.y, e.r);
+                    e.x -= speed;
+
+                    if(abs(e.x - mx) + abs(e.y - my) < 32) {
+                        e.x = -screenSize;
+                        life += isCoin(e) ? 1 : -10;
+                    }
                 }
             }
             {
                 // Water reflection
-                alpha(0.3);
+                col("#fff");
+                alpha(0.5);
                 drawRect(screenSize/2, horizon + screenSize/8, screenSize, screenSize/4);
             }
             {
                 time++;
-                untyped requestAnimationFrame(loop);
+                distance += speed;
+
+                if(life > 0) {
+                    untyped requestAnimationFrame(loop);
+                } else {
+                    untyped life = "LOST";
+                }
+
+                if(time % 64 == 0) {
+                    speed++;
+                }
+            }
+            {
+                // Hud
+                alpha(1);
+                col("#000");
+                Shim.context.fillText(untyped life, 32, screenSize * 0.9);
             }
         }
         loop(0);
