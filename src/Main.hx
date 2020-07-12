@@ -29,6 +29,9 @@ class Main {
         var life = 100;
         var speed = 1;
         var distance = 0;
+        function scale(s) {
+            Shim.context.scale(s, s);
+        }
         function col(n:Dynamic) {
             Shim.context.fillStyle = n;
         }
@@ -40,17 +43,15 @@ class Main {
         }
         function drawCircle(x, y, r) {
             Shim.context.beginPath();
-            Shim.context.arc(x, y, r, 0, 6.28);
+            Shim.context.arc(x, y, r, 0, 7);
             Shim.context.fill();
         }
         function random():Float {
             var x = (sin(rseed++) + 1) * 99;
             return x - Std.int(x);
         }
-        untyped onmousedown = untyped onmouseup = function(e) {
-        }
         untyped onmousemove = function(e) {
-            my = m.min(screenSize * 0.7, e.clientY);
+            my = m.min(screenSize/2, e.clientY);
         }
         function spawn(x, y, r) {
             entities[entities.length] = {x:x, y:y, r:r};
@@ -91,7 +92,6 @@ class Main {
                 // World
                 col(gradient);
                 drawRect(screenSize/2, screenSize/2, screenSize, screenSize);
-                alpha(1);
                 col("#6bf");
                 drawCircle(screenSize/2, horizon, 128);
                 col("#57c");
@@ -143,7 +143,9 @@ class Main {
                 // Hud
                 alpha(1);
                 col("#000");
-                Shim.context.fillText(untyped life, 32, screenSize * 0.9);
+                scale(4);
+                Shim.context.fillText(untyped life, 32/4, 122);
+                scale(1/4);
             }
         }
         loop(0);
