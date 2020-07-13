@@ -10,9 +10,12 @@ Entry for JS1024 2020 : Annual javascript golfing competition.
 
 ## Features
 
- * Parallax backgrounds
+ * Parallax backgrounds inspired by https://filipp8.itch.io/drones
  * User-controlled ship
  * Pickable coins
+ * Obstacles
+ * Life
+ * Score
  * Code size is below 1024 bytes
 
 ## Build
