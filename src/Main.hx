@@ -144,7 +144,7 @@ class Main {
                 alpha(1);
                 col("#000");
                 scale(4);
-                Shim.context.fillText(untyped life, 32/4, 122);
+                Shim.context.fillText(untyped life + "      " + distance, 32/4, 122);
                 scale(1/4);
             }
         }
