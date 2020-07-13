@@ -4,6 +4,10 @@
 
 Entry for JS1024 2020 : Annual javascript golfing competition.
 
+## Demo
+
+![Image](https://github.com/gogoprog/js1024-2020/raw/master/demo.gif)
+
 ## Instructions
 
  * Use the mouse to pick the white coins
