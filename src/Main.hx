@@ -53,16 +53,17 @@ class Main {
         function addColorStop(gradient, f, col) {
             gradient.addColorStop(f, col);
         }
-        inline function drawShip() {
-            col("#111");
-            drawRect(mouseX, mouseY, 32, 16);
-            drawRect(mouseX - 24, mouseY + 9, 16, 9);
-            drawRect(mouseX - 24, mouseY - 9, 16, 9);
-        }
         var gradient = Shim.context.createLinearGradient(0, 0, 0, screenSize);
         addColorStop(gradient, 0, "#116");
         addColorStop(gradient, 0.75, "#A9D");
         addColorStop(gradient, 1, "#003");
+        inline function drawShip() {
+            col("#222");
+            drawRect(mouseX, mouseY, 32, 16);
+            drawRect(mouseX - 20, mouseY + 8, 16, 9);
+            drawRect(mouseX - 20, mouseY - 8, 16, 9);
+            drawRect(mouseX + 18, mouseY, 8, 8);
+        }
         function drawBuildings(f, vmirror:Bool, hmax) {
             var a = (distance/f) % 32;
 
@@ -126,7 +127,7 @@ class Main {
                 if(life > 0) {
                     untyped requestAnimationFrame(loop);
                 } else {
-                    untyped life = "LOST";
+                    untyped life = "GAMEOVER";
                 }
 
                 if(time % 64 == 0) {
