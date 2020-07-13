@@ -1,5 +1,3 @@
-import js.Browser.window;
-
 @:native("")
 extern class Shim {
     @:native("a") static var canvas:js.html.CanvasElement;
@@ -14,16 +12,12 @@ typedef Entity = {
 
 class Main {
     static inline var screenSize = 512;
-    static inline var mx = 64;
+    static inline var mouseX = 64;
     static function main() {
         Shim.canvas.width = Shim.canvas.height = screenSize;
-        var rseed;
-        var my = 0;
+        var randomSeed;
+        var mouseY = 0;
         var time:Int = 0;
-        var m = Math;
-        var abs = m.abs;
-        var sin = m.sin;
-        var cos = m.cos;
         var horizon:Float = screenSize * 0.75;
         var entities = new Array<Entity>();
         var life = 100;
@@ -47,11 +41,11 @@ class Main {
             Shim.context.fill();
         }
         function random():Float {
-            var x = (sin(rseed++) + 1) * 99;
+            var x = (Math.sin(randomSeed++) + 1) * 99;
             return x - Std.int(x);
         }
         untyped onmousemove = function(e) {
-            my = m.min(screenSize/2, e.clientY);
+            mouseY = Math.min(screenSize/2, e.clientY);
         }
         function spawn(x, y, r) {
             entities[entities.length] = {x:x, y:y, r:r};
@@ -61,9 +55,9 @@ class Main {
         }
         inline function drawShip() {
             col("#111");
-            drawRect(mx, my, 32, 16);
-            drawRect(mx - 24, my + 9, 16, 9);
-            drawRect(mx - 24, my - 9, 16, 9);
+            drawRect(mouseX, mouseY, 32, 16);
+            drawRect(mouseX - 24, mouseY + 9, 16, 9);
+            drawRect(mouseX - 24, mouseY - 9, 16, 9);
         }
         var gradient = Shim.context.createLinearGradient(0, 0, 0, screenSize);
         addColorStop(gradient, 0, "#116");
@@ -73,7 +67,7 @@ class Main {
             var a = (distance/f) % 32;
 
             for(i in 0...20) {
-                rseed = Std.int((distance/ f)/32) + i;
+                randomSeed = Std.int((distance/ f)/32) + i;
                 var h = 24 + random() * hmax;
                 var w = 16+ random() * 16;
                 drawRect(i * 32 - a, horizon - (vmirror ? 0 : h/2), w, h);
@@ -81,7 +75,7 @@ class Main {
                 drawRect(i * 32 - a - w/2 + random() * w, horizon - (vmirror ? 0 : h/2), 4 + random() * 4, h);
             }
         }
-        inline function isEnemy(e) {
+        inline function isEnemouseY(e) {
             return e.r != 4;
         }
         inline function isCoin(e) {
@@ -113,7 +107,7 @@ class Main {
                     drawCircle(e.x, e.y, e.r);
                     e.x -= speed;
 
-                    if(abs(e.x - mx) + abs(e.y - my) < 32) {
+                    if(Math.abs(e.x - mouseX) + Math.abs(e.y - mouseY) < 32) {
                         e.x = -screenSize;
                         life += isCoin(e) ? 1 : -10;
                     }
