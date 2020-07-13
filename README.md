@@ -4,6 +4,8 @@
 
 Entry for JS1024 2020 : Annual javascript golfing competition.
 
+https://js1024.fun/demos/2020#40
+
 ## Demo
 
 ![Image](https://github.com/gogoprog/js1024-2020/raw/master/demo.gif)
